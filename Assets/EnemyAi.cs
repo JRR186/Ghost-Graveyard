@@ -27,6 +27,8 @@ public class EnemyAi : MonoBehaviour
     public GameObject ammo;
     public GameObject heart;
 
+    public AudioSource ghostSound1;
+    public AudioSource ghostSound2;
 
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
@@ -63,7 +65,7 @@ public class EnemyAi : MonoBehaviour
     }
     private void SearchWalkPoint()
     {
-
+        ghostSound2.Play();
         float randomZ = Random.Range(-walkPointRange, walkPointRange);
         float randomX = Random.Range(-walkPointRange, walkPointRange);
 
