@@ -1,16 +1,18 @@
 ﻿
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyAi : MonoBehaviour
 {
+    public WaveSpawner spawner;
     public NavMeshAgent agent;
 
     public Transform player;
 
     public LayerMask whatGround, whatPlayer;
 
-    public float health;
+    public float enemyHealth;
 
  
     public Vector3 walkPoint;
@@ -21,6 +23,7 @@ public class EnemyAi : MonoBehaviour
     public float timeBetweenAttacks;
     bool alreadyAttacked;
     public GameObject projectile;
+    public GameObject ammo;
 
 
     public float sightRange, attackRange;
@@ -82,11 +85,13 @@ public class EnemyAi : MonoBehaviour
 
         if (!alreadyAttacked)
         {
-
-            Rigidbody rb = Instantiate(projectile, transform.position, Quaternion.identity).GetComponent<Rigidbody>();
+            GameObject projectileClone = Instantiate(projectile, transform.position, Quaternion.identity);
+            Rigidbody rb = projectileClone.GetComponent<Rigidbody>();
+            projectileClone.SetActive(true);
             rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
             rb.AddForce(transform.up * 8f, ForceMode.Impulse);
-
+            
+            Destroy(projectileClone, 3f);
 
             alreadyAttacked = true;
             Invoke(nameof(ResetAttack), timeBetweenAttacks);
@@ -99,12 +104,16 @@ public class EnemyAi : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
+        enemyHealth -= damage;
 
-        if (health <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
+        if (enemyHealth <= 0) Invoke(nameof(DestroyEnemy), 0.5f);
     }
-    private void DestroyEnemy()
+    public void DestroyEnemy()
     {
+        spawner.waves[spawner.currentWave].enemiesLeft--;
+        GameObject ammoClone = Instantiate(ammo, transform.position, Quaternion.Euler(0, 0, 90));
+        Rigidbody rb = ammoClone.GetComponent<Rigidbody>();
+        ammoClone.SetActive(true);
         Destroy(gameObject);
     }
 

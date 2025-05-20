@@ -1,17 +1,34 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Cinemachine;
+using UnityEngine.SceneManagement;
+using System.Collections;
 public class PlayerController : MonoBehaviour
 {
+    public MainMenu menu;
     public Rigidbody rb;
     public CinemachineCamera cam;
-    public float speed, sensitivity, maxForce, jumpHeight;
+    public float speed, sensitivity, maxForce, jumpHeight, playerHealth;
     private Vector2 move, look;
     private float lookRotation;
 
     [SerializeField]private Transform groundCheck;
     [SerializeField]private LayerMask groundMask;
 
+    public void TakeDamage(int damage)
+    {
+        playerHealth -= damage;
+        Debug.Log("Took " + damage + " damage");
+        if (playerHealth <= 0)
+        {
+            StartCoroutine(LoadStart());
+        }
+    }
+    public IEnumerator LoadStart()
+    {
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene("Start");
+    }
     public void OnMove(InputAction.CallbackContext context)
     {
         move = context.ReadValue<Vector2>();

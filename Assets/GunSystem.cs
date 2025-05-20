@@ -5,23 +5,26 @@ using TMPro;
 
 public class GunSystem : MonoBehaviour
 {
-    public int damage, magazineSize, totalMagazines, bulletsPerTap, bulletsLeft;
+    public int damage, magazineSize, totalMagazines, bulletsPerTap, bulletsLeft, currentMagazines;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public bool automatic;
 
-    int bulletsShot, currentMagazines;
+    int bulletsShot;
     bool shooting, readyToShoot, reloading;
 
     public CinemachineCamera cam;
     public Transform attackPoint;
     public RaycastHit rayHit;
     public LayerMask enemy;
+    public LayerMask player;
     public Animator animator;
 
     public GameObject muzzleFlash, bulletHoleGraphic;
     public CinemachineImpulseSource impulseSource;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI magText;
+    EnemyAi enemies;
+
     
 
     private void Start()
@@ -45,7 +48,7 @@ public class GunSystem : MonoBehaviour
 
     public void OnFire(InputAction.CallbackContext context)
 {
-    if (automatic)
+        if (automatic)
     {
         shooting = context.ReadValueAsButton();
         if (shooting && readyToShoot && !reloading && bulletsLeft > 0)
@@ -86,7 +89,7 @@ public class GunSystem : MonoBehaviour
         if (Physics.Raycast(cam.transform.position, direction, out rayHit, range, enemy))
         {
             if (rayHit.collider.CompareTag("Enemy")) {
-                //rayHit.collider.GetComponent<PlayerHealth>().TakeDamage(damage); 
+                rayHit.collider.GetComponent<EnemyAi>().TakeDamage(damage); 
             } 
         }
 
@@ -100,8 +103,8 @@ public class GunSystem : MonoBehaviour
             bulletHoleRotation = Quaternion.LookRotation(Vector3.forward, rayHit.normal);
         }
 
-        Instantiate(bulletHoleGraphic, rayHit.point, bulletHoleRotation);
-
+        GameObject bulletHole = Instantiate(bulletHoleGraphic, rayHit.point, bulletHoleRotation);
+        Destroy(bulletHole, 1f);
 
         GameObject flash = Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
         Destroy(flash, 0.1f);
@@ -133,4 +136,5 @@ public class GunSystem : MonoBehaviour
         bulletsLeft = magazineSize;
         reloading = false;
     }
+    
 }
