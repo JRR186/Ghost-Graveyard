@@ -3,9 +3,10 @@ using UnityEngine.InputSystem;
 using Unity.Cinemachine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UI;
+using TMPro;
 public class PlayerController : MonoBehaviour
 {
-    public MainMenu menu;
     public Rigidbody rb;
     public CinemachineCamera cam;
     public float speed, sensitivity, maxForce, jumpHeight, playerHealth;
@@ -15,13 +16,43 @@ public class PlayerController : MonoBehaviour
     [SerializeField]private Transform groundCheck;
     [SerializeField]private LayerMask groundMask;
 
+    public TextMeshProUGUI healthText;
+    public Image blood1, blood2, blood3;
+    public GameObject Blood1, Blood2, Blood3;
+
     public void TakeDamage(int damage)
     {
         playerHealth -= damage;
-        Debug.Log("Took " + damage + " damage");
+        BloodScreen();
+
         if (playerHealth <= 0)
         {
             StartCoroutine(LoadStart());
+        }
+    }
+    public void BloodScreen()
+    {
+        healthText.SetText(playerHealth.ToString());
+        float transparency = 1f - ((playerHealth / 100f)*2);
+        Color color = Color.white;
+        color.a = transparency;
+
+        if (playerHealth > 90)
+        {
+            Blood1.SetActive(true);
+            blood1.color = color;
+        }
+        if (playerHealth > 40)
+        {
+            Blood2.SetActive(true);
+            Blood1.SetActive(false);
+            blood2.color = color;
+        }
+        if (playerHealth > 10)
+        {
+            Blood3.SetActive(true);
+            Blood2.SetActive(false);
+            blood3.color = color;
         }
     }
     public IEnumerator LoadStart()
@@ -77,6 +108,11 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
+    }
+
+    private void Update()
+    {
+        BloodScreen();
     }
 
     private void Start()

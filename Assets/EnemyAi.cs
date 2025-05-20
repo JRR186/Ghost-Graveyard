@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -24,6 +25,7 @@ public class EnemyAi : MonoBehaviour
     bool alreadyAttacked;
     public GameObject projectile;
     public GameObject ammo;
+    public GameObject heart;
 
 
     public float sightRange, attackRange;
@@ -111,9 +113,12 @@ public class EnemyAi : MonoBehaviour
     public void DestroyEnemy()
     {
         spawner.waves[spawner.currentWave].enemiesLeft--;
-        GameObject ammoClone = Instantiate(ammo, transform.position, Quaternion.Euler(0, 0, 90));
-        Rigidbody rb = ammoClone.GetComponent<Rigidbody>();
-        ammoClone.SetActive(true);
+        List<GameObject> items = new List<GameObject> {ammo, heart};
+        int randomIndex = Random.Range(0, items.Count);
+        GameObject itemChoice = items[randomIndex];
+        GameObject itemClone = Instantiate(itemChoice, transform.position, Quaternion.identity);
+        Rigidbody rb = itemClone.GetComponent<Rigidbody>();
+        itemClone.SetActive(true);
         Destroy(gameObject);
     }
 

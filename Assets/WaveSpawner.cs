@@ -10,6 +10,7 @@ public class WaveSpawner : MonoBehaviour
     [SerializeField] private GameObject spawnPoint;
     public int currentWave = 0;
 
+    public TextMeshProUGUI enemiesLeftText;
     public TextMeshProUGUI currentWaveText;
     public TextMeshProUGUI waveCountdownText;
     public Wave[] waves;
@@ -20,6 +21,7 @@ public class WaveSpawner : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        enemiesLeftText.SetText(waves[currentWave].enemiesLeft.ToString());
         for (int i = 0; i < waves.Length; i++)
         {
             waves[i].enemiesLeft = waves[i].enemies.Length;
