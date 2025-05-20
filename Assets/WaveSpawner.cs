@@ -36,6 +36,7 @@ public class WaveSpawner : MonoBehaviour
             currentWaveText.SetText("All Waves Survived!");
             PlayerController playerController = FindFirstObjectByType<PlayerController>();
             playerController.StartCoroutine(playerController.LoadStart());
+            return;
         }
 
         if (readyToCountDown == true)

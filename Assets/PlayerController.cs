@@ -9,14 +9,16 @@ public class PlayerController : MonoBehaviour
 {
     public Rigidbody rb;
     public CinemachineCamera cam;
-    public float speed, sensitivity, maxForce, jumpHeight, playerHealth;
+    public float speed, sprintSpeed, sensitivity, maxForce, jumpHeight, playerHealth;
     private Vector2 move, look;
     private float lookRotation;
+    private bool sprinting;
 
     [SerializeField]private Transform groundCheck;
     [SerializeField]private LayerMask groundMask;
 
     public TextMeshProUGUI healthText;
+    public TextMeshProUGUI currentwaveText;
     public Image blood1, blood2, blood3;
     public GameObject Blood1, Blood2, Blood3;
 
@@ -27,6 +29,7 @@ public class PlayerController : MonoBehaviour
 
         if (playerHealth <= 0)
         {
+            currentwaveText.SetText("You died :(");
             StartCoroutine(LoadStart());
         }
     }
@@ -57,7 +60,7 @@ public class PlayerController : MonoBehaviour
     }
     public IEnumerator LoadStart()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         SceneManager.LoadScene("Start");
     }
     public void OnMove(InputAction.CallbackContext context)
@@ -73,6 +76,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void OnSprint(InputAction.CallbackContext context)
+    {
+        sprinting = context.ReadValueAsButton();
+    }
+
     void Move()
     {
         Vector3 currentVelocity = rb.linearVelocity;
@@ -81,8 +89,8 @@ public class PlayerController : MonoBehaviour
         Vector3 targetDirection = cam.transform.right * move.x + cam.transform.forward * move.y;
         targetDirection.y = 0f;
         targetDirection.Normalize();
-
-        Vector3 targetVelocity = targetDirection * speed;
+        Vector3 targetVelocity = targetDirection;
+        targetVelocity *= sprinting ? sprintSpeed : speed;
 
         Vector3 velocityChange = targetVelocity - currentVelocity;
         velocityChange = new Vector3(velocityChange.x, 0, velocityChange.z);

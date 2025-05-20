@@ -19,10 +19,12 @@ public class GunSystem : MonoBehaviour
     public LayerMask player;
     public Animator animator;
 
+    public AudioSource shootSound;
     public GameObject muzzleFlash, bulletHoleGraphic;
     public CinemachineImpulseSource impulseSource;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI magText;
+    public TextMeshProUGUI reloadText;
     EnemyAi enemies;
 
     
@@ -85,7 +87,7 @@ public class GunSystem : MonoBehaviour
 
         Vector3 direction = cam.transform.forward + new Vector3(x, y, 0);
 
-
+        shootSound.Play();
         if (Physics.Raycast(cam.transform.position, direction, out rayHit, range, enemy))
         {
             if (rayHit.collider.CompareTag("Enemy")) {
@@ -126,12 +128,14 @@ public class GunSystem : MonoBehaviour
     {
         if (currentMagazines > 0 && bulletsLeft < magazineSize)
         {
+            reloadText.SetText("Reloading...");
             reloading = true;
             Invoke("ReloadFinished", reloadTime);
         }
     }
     private void ReloadFinished()
     {
+        reloadText.SetText("");
         currentMagazines--;
         bulletsLeft = magazineSize;
         reloading = false;
